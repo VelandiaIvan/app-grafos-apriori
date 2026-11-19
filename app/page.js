@@ -46,7 +46,34 @@ export default function Home() {
       <header>
         <h1 style={{ margin: 0 }}>Reglas de asociación del supermercado</h1>
         <p style={{ margin: "4px 0", color: "#94a3b8" }}>Algoritmo Apriori · reglas duplicadas y redundantes eliminadas · fuente: <b>{data.fuente || "..."}</b></p>
+        <p style={{ margin: "8px 0 0" }}><b>Iván Velandia</b> · Maestría en Analítica de Datos · Universidad Central · Materia: Marketing Digital</p>
       </header>
+
+      <section style={card}>
+        <h2 style={{ marginTop: 0 }}>Introducción</h2>
+        <p>Los supermercados registran qué productos se compran juntos en cada venta. Analizar esas canastas permite decidir cómo ubicar los productos, qué combos ofrecer y qué recomendar al cliente, que es la base de los sistemas de recomendación del marketing digital.</p>
+        <p>Este trabajo analiza 12 transacciones y 10 productos (archivo <i>DatosCompras.csv</i>) con el algoritmo Apriori, guarda el resultado en una base de grafos Neo4j y lo muestra como un grafo interactivo.</p>
+        <h3>Conceptos clave</h3>
+        <ul>
+          <li><b>Soporte:</b> proporción de compras que contienen los productos de la regla.</li>
+          <li><b>Confianza:</b> de las compras que incluyen el antecedente, proporción que también incluye el consecuente.</li>
+          <li><b>Lift:</b> cuánto más probable es la compra conjunta que si fueran independientes. Mayor que 1 indica asociación real.</li>
+          <li><b>Reglas redundantes:</b> se elimina una regla si otra más simple tiene igual o mayor confianza para el mismo consecuente.</li>
+          <li><b>Grafo:</b> los productos y las reglas son nodos; las flechas van del antecedente a la regla y de la regla al consecuente.</li>
+        </ul>
+      </section>
+
+      <section style={card}>
+        <h2 style={{ marginTop: 0 }}>Hallazgos</h2>
+        <ul>
+          <li><b>Pan, Leche y Mantequilla</b> aparecen en 9 de las 12 compras (75 % cada uno). Son los productos ancla de la tienda y forman el núcleo del grafo.</li>
+          <li><b>Salchichas → Catsup</b> tiene lift 4,0: la asociación más fuerte, aunque en pocas compras. Toda compra de salchichas incluyó catsup.</li>
+          <li><b>Leche + Mantequilla → Pan</b> ocurre en el 50 % de las compras con 100 % de confianza. Es la regla más frecuente.</li>
+          <li><b>Huevos</b> siempre se compran con Pan y Mantequilla, pero es un producto de baja rotación (2 compras).</li>
+          {data.reglas[0] && <li>Con los umbrales actuales hay <b>{data.reglas.length} reglas</b>; la de mayor lift es <b>{data.reglas[0].lhs.join(" + ")} → {data.reglas[0].rhs.join(" + ")}</b> (lift {data.reglas[0].lift.toFixed(2)}).</li>}
+          <li><b>Limitación:</b> con solo 12 transacciones las reglas son indicativas. Con más datos habría que validar su estabilidad.</li>
+        </ul>
+      </section>
 
       <section style={{ ...card, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 16 }}>
         {[["Soporte mínimo", sup, setSup, 0.05, 0.6, 0.05], ["Confianza mínima", conf, setConf, 0.1, 1, 0.05], ["Lift mínimo", lift, setLift, 0.5, 3, 0.1]].map(([n, v, f, mi, ma, st]) => (
